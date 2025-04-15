@@ -1,27 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>The Game</title>
+  <meta charset="UTF-8" />
+  <title>GK Quiz Game</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
-    body {
-      background: #222;
-      color: #0f0;
-      font-family: 'Courier New', Courier, monospace;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+    .quiz-container {
+      max-width: 600px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      text-align: center;
     }
-    h1 {
-      animation: blink 1s infinite;
+
+    .option-btn {
+      display: block;
+      margin: 10px auto;
+      padding: 10px;
+      width: 80%;
+      background: #ddd;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
-    @keyframes blink {
-      50% { opacity: 0.5; }
+
+    .option-btn:hover {
+      background: #ccc;
+    }
+
+    #next-btn, #start-btn {
+      padding: 10px 20px;
+      margin-top: 20px;
+      background: #27ae60;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #next-btn:hover, #start-btn:hover {
+      background: #2ecc71;
+    }
+
+    #score-box {
+      margin-top: 20px;
+      font-size: 1.2em;
     }
   </style>
 </head>
 <body>
-  <h1>🚀 Game Coming Soon...</h1>
+  <div class="quiz-container">
+    <h1>🧠 GK Blitz Quiz</h1>
+    <div id="quiz-box">
+      <p id="question">Click Start to Play!</p>
+      <div id="options"></div>
+      <button id="next-btn" style="display: none;">Next</button>
+    </div>
+    <button id="start-btn">Start Game</button>
+    <p id="score-box"></p>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "Who was the first Prime Minister of India?",
+        options: ["Jawaharlal Nehru", "Mahatma Gandhi", "Narendra Modi", "Sardar Patel"],
+        answer: "Jawaharlal Nehru"
+      },
+      {
+        question: "Which planet is known as the Red Planet?",
+        options: ["Earth", "Mars", "Jupiter", "Venus"],
+        answer: "Mars"
+      },
+      {
+        question: "What is the capital of France?",
+        options: ["London", "Paris", "Berlin", "Rome"],
+        answer: "Paris"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const questionEl = document.getElementById('question');
+    const optionsEl = document.getElementById('options');
+    const nextBtn = document.getElementById('next-btn');
+    const startBtn = document.getElementById('start-btn');
+    const scoreBox = document.getElementById('score-box');
+
+    function showQuestion() {
+      let q = questions[currentQuestion];
+      questionEl.textContent = q.question;
+      optionsEl.innerHTML = '';
+      q.options.forEach(option => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = option;
+        btn.onclick = () => checkAnswer(option);
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(selected) {
+      let correct = questions[currentQuestion].answer;
+      if (selected === correct) score++;
+
+      nextBtn.style.display = 'inline-block';
+
+      document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.disabled = true;
+        if (btn.textContent === correct) {
+          btn.style.background = 'lightgreen';
+        } else if (btn.textContent === selected) {
+          btn.style.background = 'lightcoral';
+        }
+      });
+    }
+
+    nextBtn.onclick = () => {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        showQuestion();
+        nextBtn.style.display = 'none';
+      } else {
+        endGame();
+      }
+    };
+
+    startBtn.onclick = () => {
+      currentQuestion = 0;
+      score = 0;
+      startBtn.style.display = 'none';
+      scoreBox.textContent = '';
+      showQuestion();
+    };
+
+    function endGame() {
+      questionEl.textContent = "Quiz Over!";
+      optionsEl.innerHTML = '';
+      nextBtn.style.display = 'none';
+      startBtn.style.display = 'inline-block';
+      scoreBox.textContent = `You scored ${score} out of ${questions.length}!`;
+    }
+  </script>
 </body>
 </html>
+
