@@ -1,152 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>GK Quiz Game</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Color Prediction Game</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    .quiz-container {
-      max-width: 600px;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-      text-align: center;
+    .color-boxes {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
     }
-
-    .option-btn {
-      display: block;
-      margin: 10px auto;
-      padding: 10px;
-      width: 80%;
-      background: #ddd;
-      color: #000;
-      font-weight: bold;
-      border: none;
-      border-radius: 5px;
+    .color {
+      width: 60px;
+      height: 60px;
+      margin: 0 10px;
       cursor: pointer;
+      border-radius: 8px;
+      border: 2px solid white;
     }
-
-    .option-btn:hover {
-      background: #ccc;
-    }
-
-    #next-btn, #start-btn {
-      padding: 10px 20px;
+    #result {
+      font-size: 20px;
       margin-top: 20px;
-      background: #27ae60;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    #next-btn:hover, #start-btn:hover {
-      background: #2ecc71;
-    }
-
-    #score-box {
-      margin-top: 20px;
-      font-size: 1.2em;
     }
   </style>
 </head>
 <body>
-  <div class="quiz-container">
-    <h1>🧠 GK Blitz Quiz</h1>
-    <div id="quiz-box">
-      <p id="question">Click Start to Play!</p>
-      <div id="options"></div>
-      <button id="next-btn" style="display: none;">Next</button>
+  <div class="container">
+    <h2>🎨 Predict the Color</h2>
+    <p>Click on the color you think will be randomly selected.</p>
+    <div class="color-boxes">
+      <div class="color" style="background:red;" onclick="predictColor('red')"></div>
+      <div class="color" style="background:green;" onclick="predictColor('green')"></div>
+      <div class="color" style="background:blue;" onclick="predictColor('blue')"></div>
+      <div class="color" style="background:yellow;" onclick="predictColor('yellow')"></div>
     </div>
-    <button id="start-btn">Start Game</button>
-    <p id="score-box"></p>
+    <div id="result"></div>
   </div>
 
   <script>
-    const questions = [
-      {
-        question: "Who was the first Prime Minister of India?",
-        options: ["Jawaharlal Nehru", "Mahatma Gandhi", "Narendra Modi", "Sardar Patel"],
-        answer: "Jawaharlal Nehru"
-      },
-      {
-        question: "Which planet is known as the Red Planet?",
-        options: ["Earth", "Mars", "Jupiter", "Venus"],
-        answer: "Mars"
-      },
-      {
-        question: "What is the capital of France?",
-        options: ["London", "Paris", "Berlin", "Rome"],
-        answer: "Paris"
-      }
-    ];
-
-    let currentQuestion = 0;
-    let score = 0;
-
-    const questionEl = document.getElementById('question');
-    const optionsEl = document.getElementById('options');
-    const nextBtn = document.getElementById('next-btn');
-    const startBtn = document.getElementById('start-btn');
-    const scoreBox = document.getElementById('score-box');
-
-    function showQuestion() {
-      let q = questions[currentQuestion];
-      questionEl.textContent = q.question;
-      optionsEl.innerHTML = '';
-      q.options.forEach(option => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.textContent = option;
-        btn.onclick = () => checkAnswer(option);
-        optionsEl.appendChild(btn);
-      });
-    }
-
-    function checkAnswer(selected) {
-      let correct = questions[currentQuestion].answer;
-      if (selected === correct) score++;
-
-      nextBtn.style.display = 'inline-block';
-
-      document.querySelectorAll('.option-btn').forEach(btn => {
-        btn.disabled = true;
-        if (btn.textContent === correct) {
-          btn.style.background = 'lightgreen';
-        } else if (btn.textContent === selected) {
-          btn.style.background = 'lightcoral';
-        }
-      });
-    }
-
-    nextBtn.onclick = () => {
-      currentQuestion++;
-      if (currentQuestion < questions.length) {
-        showQuestion();
-        nextBtn.style.display = 'none';
+    function predictColor(userColor) {
+      const colors = ['red', 'green', 'blue', 'yellow'];
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      const result = document.getElementById("result");
+      
+      if (userColor === randomColor) {
+        result.textContent = `✅ You guessed right! It was ${randomColor.toUpperCase()}`;
+        result.style.color = "lightgreen";
       } else {
-        endGame();
+        result.textContent = `❌ Oops! It was ${randomColor.toUpperCase()}`;
+        result.style.color = "orange";
       }
-    };
-
-    startBtn.onclick = () => {
-      currentQuestion = 0;
-      score = 0;
-      startBtn.style.display = 'none';
-      scoreBox.textContent = '';
-      showQuestion();
-    };
-
-    function endGame() {
-      questionEl.textContent = "Quiz Over!";
-      optionsEl.innerHTML = '';
-      nextBtn.style.display = 'none';
-      startBtn.style.display = 'inline-block';
-      scoreBox.textContent = `You scored ${score} out of ${questions.length}!`;
     }
   </script>
 </body>
 </html>
-
