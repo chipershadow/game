@@ -2,54 +2,137 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Color Prediction Game</title>
+  <title>Game Hub</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    .color-boxes {
-      display: flex;
-      justify-content: center;
-      margin: 20px 0;
-    }
-    .color {
-      width: 60px;
-      height: 60px;
-      margin: 0 10px;
+    .game-menu button {
+      margin: 5px;
+      padding: 10px 15px;
+      font-weight: bold;
+      border-radius: 6px;
+      border: none;
       cursor: pointer;
-      border-radius: 8px;
-      border: 2px solid white;
+      background-color: #16a085;
+      color: white;
     }
-    #result {
-      font-size: 20px;
+
+    .game-container {
+      display: none;
       margin-top: 20px;
+    }
+
+    .active {
+      display: block;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>🎨 Predict the Color</h2>
-    <p>Click on the color you think will be randomly selected.</p>
-    <div class="color-boxes">
-      <div class="color" style="background:red;" onclick="predictColor('red')"></div>
-      <div class="color" style="background:green;" onclick="predictColor('green')"></div>
-      <div class="color" style="background:blue;" onclick="predictColor('blue')"></div>
-      <div class="color" style="background:yellow;" onclick="predictColor('yellow')"></div>
+    <h1>🎮 Choose a Game</h1>
+    <div class="game-menu">
+      <button onclick="showGame('colorGame')">Color Guess</button>
+      <button onclick="showGame('numberGame')">Number Guess</button>
+      <button onclick="showGame('rpsGame')">Rock Paper Scissors</button>
+      <button onclick="showGame('reactionGame')">Reaction Time</button>
     </div>
-    <div id="result"></div>
+
+    <!-- Color Guess -->
+    <div class="game-container" id="colorGame">
+      <h2>🎨 Color Guess</h2>
+      <p>Click the color you think will be randomly chosen.</p>
+      <div class="color-boxes">
+        <div class="color" style="background:red;" onclick="guessColor('red')"></div>
+        <div class="color" style="background:green;" onclick="guessColor('green')"></div>
+        <div class="color" style="background:blue;" onclick="guessColor('blue')"></div>
+        <div class="color" style="background:yellow;" onclick="guessColor('yellow')"></div>
+      </div>
+      <div id="colorResult"></div>
+    </div>
+
+    <!-- Number Guess -->
+    <div class="game-container" id="numberGame">
+      <h2>🔢 Number Guess</h2>
+      <p>Guess a number between 1 and 10:</p>
+      <input type="number" id="numberInput" min="1" max="10">
+      <button onclick="guessNumber()">Submit</button>
+      <p id="numberResult"></p>
+    </div>
+
+    <!-- Rock Paper Scissors -->
+    <div class="game-container" id="rpsGame">
+      <h2>✊ Rock ✋ Paper ✌️ Scissors</h2>
+      <button onclick="playRPS('rock')">Rock</button>
+      <button onclick="playRPS('paper')">Paper</button>
+      <button onclick="playRPS('scissors')">Scissors</button>
+      <p id="rpsResult"></p>
+    </div>
+
+    <!-- Reaction Game -->
+    <div class="game-container" id="reactionGame">
+      <h2>⚡ Reaction Time</h2>
+      <button id="startReaction" onclick="startReaction()">Start</button>
+      <div id="reactionBox" style="margin-top:20px; height:100px; background:#eee; display:none;"></div>
+      <p id="reactionResult"></p>
+    </div>
   </div>
 
   <script>
-    function predictColor(userColor) {
+    function showGame(id) {
+      document.querySelectorAll('.game-container').forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    // Color Guess Logic
+    function guessColor(color) {
       const colors = ['red', 'green', 'blue', 'yellow'];
-      const randomColor = colors[Math.floor(Math.random() * colors.length)];
-      const result = document.getElementById("result");
-      
-      if (userColor === randomColor) {
-        result.textContent = `✅ You guessed right! It was ${randomColor.toUpperCase()}`;
-        result.style.color = "lightgreen";
-      } else {
-        result.textContent = `❌ Oops! It was ${randomColor.toUpperCase()}`;
-        result.style.color = "orange";
-      }
+      const chosen = colors[Math.floor(Math.random() * colors.length)];
+      const result = document.getElementById("colorResult");
+      result.textContent = color === chosen ? `✅ Correct! It was ${chosen}` : `❌ Wrong! It was ${chosen}`;
+    }
+
+    // Number Guess Logic
+    function guessNumber() {
+      const userGuess = parseInt(document.getElementById("numberInput").value);
+      const correct = Math.floor(Math.random() * 10) + 1;
+      const result = document.getElementById("numberResult");
+      result.textContent = userGuess === correct ? `🎉 Correct! The number was ${correct}` : `😕 Wrong! It was ${correct}`;
+    }
+
+    // RPS Logic
+    function playRPS(user) {
+      const choices = ['rock', 'paper', 'scissors'];
+      const cpu = choices[Math.floor(Math.random() * choices.length)];
+      const result = document.getElementById("rpsResult");
+      if (user === cpu) result.textContent = `😐 It's a tie! CPU chose ${cpu}`;
+      else if (
+        (user === 'rock' && cpu === 'scissors') ||
+        (user === 'scissors' && cpu === 'paper') ||
+        (user === 'paper' && cpu === 'rock')
+      ) result.textContent = `🏆 You win! CPU chose ${cpu}`;
+      else result.textContent = `💥 You lose! CPU chose ${cpu}`;
+    }
+
+    // Reaction Game Logic
+    let reactionTimeout;
+    function startReaction() {
+      const box = document.getElementById("reactionBox");
+      const result = document.getElementById("reactionResult");
+      box.style.background = '#eee';
+      box.style.display = 'block';
+      result.textContent = '';
+
+      const delay = Math.floor(Math.random() * 3000) + 2000;
+      reactionTimeout = setTimeout(() => {
+        box.style.background = 'lime';
+        const startTime = Date.now();
+
+        box.onclick = () => {
+          const reactionTime = Date.now() - startTime;
+          result.textContent = `⚡ Your reaction time: ${reactionTime} ms`;
+          box.style.display = 'none';
+          box.onclick = null;
+        }
+      }, delay);
     }
   </script>
 </body>
